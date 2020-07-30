@@ -72,6 +72,9 @@ func battle(attackPower int, defensePower int) {
 	//Variables to be output
 	attackWins := 0
 	defenseWins := 0
+	survivorOutput := 0
+	var attackSurvivors []int
+	var defenseSurvivors []int
 	//Generates random seed
 	rand.Seed(time.Now().UnixNano())
 
@@ -120,10 +123,12 @@ func battle(attackPower int, defensePower int) {
 			}
 			if defenseStrength <= 0 {
 				attackWins++
+				attackSurvivors = append(attackSurvivors, attackStrength)
 				break
 			}
 			if attackStrength <= 0 {
 				defenseWins++
+				defenseSurvivors = append(defenseSurvivors, defenseStrength)
 				break
 			}
 			if (len(attackRoll) >= 2) && (len(defenseRoll) >= 2) {
@@ -135,16 +140,44 @@ func battle(attackPower int, defensePower int) {
 			}
 			if defenseStrength <= 0 {
 				attackWins++
+				attackSurvivors = append(attackSurvivors, attackStrength)
 				break
 			}
 			if attackStrength <= 0 {
 				defenseWins++
+				defenseSurvivors = append(defenseSurvivors, defenseStrength)
 				break
 			}
 		}
 	}
-	fmt.Println("Attacker Wins " + strconv.Itoa(attackWins) + "/1000 times")
-	fmt.Println("Defender Wins " + strconv.Itoa(defenseWins) + "/1000 times")
+
+	if attackWins > defenseWins {
+		prob := (float64(attackWins) / 1000.0) * 100
+		output := fmt.Sprintf("%g", prob)
+		fmt.Println("Attacker won " + output + "% of battles")
+		for i := 0; i < len(attackSurvivors); i++ {
+			survivorOutput += attackSurvivors[i]
+		}
+		survivorOutput /= len(attackSurvivors)
+	} else {
+		prob := (float64(defenseWins) / 1000.0) * 100
+		output := fmt.Sprintf("%g", prob)
+		fmt.Println("Defender won " + output + "% of battles")
+		for i := 0; i < len(defenseSurvivors); i++ {
+			survivorOutput += defenseSurvivors[i]
+		}
+		survivorOutput /= len(defenseSurvivors)
+	}
+	fmt.Println()
+	fmt.Println("Attacker wins " + strconv.Itoa(attackWins) + "/1000 times")
+	fmt.Println("Defender wins " + strconv.Itoa(defenseWins) + "/1000 times")
+	fmt.Println()
+
+	if attackWins > defenseWins {
+		fmt.Println("Attacker averaged " + strconv.Itoa(survivorOutput) + " survivors")
+	} else {
+		fmt.Println("Defender averaged " + strconv.Itoa(survivorOutput) + " survivors")
+	}
 }
 
 func menu() {
